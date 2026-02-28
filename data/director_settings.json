@@ -1,0 +1,17 @@
+{
+  "director_style": "Hybrid tone: slow mythic buildup to explosive activation.",
+  "language_style": "mythic cinematic mystery",
+  "pacing": {
+    "scene_1_to_3": "slow_buildup",
+    "scene_4": "tense_acceleration",
+    "scene_5": "explosive_release",
+    "scene_6": "haunting_coda"
+  },
+  "safety_rules": [
+    "Avoid graphic violence.",
+    "No hateful or explicit sexual content.",
+    "Keep prompts suitable for broad audience storytelling."
+  ],
+  "scene_duration_seconds": 10,
+  "scene_count": 6
+}

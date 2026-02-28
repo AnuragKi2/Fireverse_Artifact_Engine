@@ -1,0 +1,6 @@
+Episode #{episode_number}: {title}
+Artifact: {artifact_name}
+Vault: {vault_name}
+Spirit Presence: {spirit_name}
+Hook: {hook}
+Cliffhanger: {cliffhanger}

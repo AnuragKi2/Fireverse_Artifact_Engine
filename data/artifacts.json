@@ -1,0 +1,23 @@
+[
+  {
+    "name": "Ember Crown",
+    "origin": "Forged inside the first volcanic storm where skyfire met obsidian prayer.",
+    "power": "Amplifies command over infernal plasma and living flame sigils.",
+    "consequence": "Each activation awakens buried war memories from the vault walls.",
+    "visual_motif": "molten filigree halo"
+  },
+  {
+    "name": "Abyssal Prism",
+    "origin": "Recovered from a drowned temple beneath a moonless tidal rift.",
+    "power": "Bends shadows into solid pathways and mirror phantoms.",
+    "consequence": "Reality fractures briefly, revealing parallel echoes of the wielder.",
+    "visual_motif": "fractured black crystal"
+  },
+  {
+    "name": "Solaris Gauntlet",
+    "origin": "Cast by an extinct order that harvested dawn from meteor iron.",
+    "power": "Converts radiant energy into precision kinetic bursts.",
+    "consequence": "Nearby relics overload and imprint prophetic symbols in the air.",
+    "visual_motif": "golden rune gauntlet"
+  }
+]
