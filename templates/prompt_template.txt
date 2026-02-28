@@ -1,0 +1,4 @@
+Generate cinematic prompts for {artifact_name} in a sacred archive.
+Tone: {tone}
+Pacing Stage: {pacing_stage}
+Safety Requirements: {safety_rules}

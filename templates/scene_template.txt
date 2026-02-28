@@ -1,0 +1,6 @@
+Scene {scene_number} ({duration_seconds}s)
+Beat: {beat}
+Visual Focus: {visual_focus}
+Narration: {narration}
+Image Prompt: {image_prompt}
+Video Prompt: {video_prompt}
