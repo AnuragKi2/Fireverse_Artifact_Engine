@@ -46,6 +46,8 @@ LEGENDARY_COLOR_RULES: Dict[str, LegendaryIdentity] = {
     "fire": LegendaryIdentity(element="fire", energy_color="red/orange"),
 }
 
+AUTO_CINEMATIC_PROMPT_MODE = True
+
 
 def _read_json(path: Path) -> Any:
     with path.open("r", encoding="utf-8") as file:
@@ -129,6 +131,16 @@ def _build_scene_content(
         f"Residual energy leaks from the {artifact['name']} and lashes into the sealed {next_artifact['name']}, forcing an urgent camera snap.",
     ]
 
+    scene_summaries = [
+        f"The sacred chamber introduces the dormant {artifact['name']} and the first omen of awakening.",
+        "Archive corridors reveal colossal relic rows while the camera maps left-right spatial depth for future threats.",
+        f"A controlled ignition sequence spreads {identity.energy_color} energy through glyph rings and floor channels.",
+        f"Containment geometry distorts as a fragmented silhouette of {spirit['name']} appears without full manifestation.",
+        f"An inner vision transition reveals {spirit['name']} in legendary form and reframes the artifact's destiny.",
+        "The chamber regains composure while a fleeting shimmer implies hidden surveillance in the background.",
+        f"A rapid energy leak bridges to {next_artifact['name']} and ends on a hard cliffhanger cut.",
+    ]
+
     visual_focus = [
         f"Discovery chamber altar reveals {artifact['name']} with {artifact['visual_motif']} detail under blue ambient vault haze.",
         "Symmetrical archive corridor with massive relics on both sides, each artifact imposing and curiosity-driven.",
@@ -152,21 +164,85 @@ def _build_scene_content(
     scenes: List[Dict[str, str]] = []
     safety_line = "; ".join(director["safety_rules"])
 
+    camera_paths = {
+        1: "Start with a 24mm wide lens, descend from ceiling centerline to a waist-level dolly push toward the altar at frame center",
+        2: "Execute a left-to-right lateral tracking move along the corridor axis while keeping relic rows locked on both sides",
+        3: "Push in from medium-wide to close-up on the core, then orbit 35 degrees clockwise around the artifact",
+        4: "Apply a controlled stutter-zoom inward with slight handheld vibration while maintaining the silhouette in rear-midground",
+        5: "Crash-zoom into the artifact core, crossfade through whiteout, then glide forward through the inner vision horizon",
+        6: "Hold a static master shot for six seconds, then perform a subtle 10-degree pan to catch the shimmer crossing background",
+        7: "Whip-pan from current altar to the sealed next relic pedestal, ending in a snap-in close-up with no camera drift",
+    }
+
+    layout_notes = {
+        1: "Artifact centered on elevated altar; spirit sigils etched in concentric circles on the floor; rear walls lined with dormant runes.",
+        2: "Main subject stays in center lane; towering relic columns occupy left and right thirds; distant vault gate anchors deep background.",
+        3: "Energy filaments originate at artifact apex, travel through ring conduits at knee height, and rebound to ceiling glyph nodes.",
+        4: "Containment rings form a 3-layer cylindrical cage around subject; fragmented silhouette appears in upper-right reflective shard.",
+        5: "Inner vision realm opens beneath subject into a storm valley; legendary figure stands full-height on a ridge in mid-background.",
+        6: "Primary altar remains foreground center; shimmer streak traverses rear-left to rear-right behind support pillars.",
+        7: f"Leaked energy exits frame right from {artifact['name']} and strikes {next_artifact['name']} at frame-left pedestal across the vault span.",
+    }
+
+    energy_behavior = {
+        1: "Energy remains dormant with only faint pulse every two seconds.",
+        2: "Background glyphs flicker at low amplitude, no uncontrolled discharge.",
+        3: "Pulses accelerate from 40% to 70% intensity in synchronized waves.",
+        4: "Containment strain creates jagged arcs that stop short of full release.",
+        5: "Full legendary surge erupts, then channels into coherent streams within the inner vision world.",
+        6: "Energy drops to near-zero, then emits one micro shimmer under 0.5 seconds.",
+        7: "Energy pressure spikes rapidly, leaks in violent bursts, and transfers momentum to the next sealed artifact.",
+    }
+
+    timing_notes = {
+        1: "Timing: 0-3s reveal environment, 3-7s push to artifact, 7-10s omen pulse.",
+        2: "Timing: 0-4s lateral scan, 4-8s relic emphasis, 8-10s lock on central path.",
+        3: "Timing: 0-2s calm hold, 2-6s ignition rise, 6-10s controlled orbit.",
+        4: "Timing: 0-4s ring strain, 4-8s distortion spikes, 8-10s freeze before rupture.",
+        5: "Timing: 0-2s explosive flash, 2-5s inner vision transition, 5-10s full legendary reveal tableau.",
+        6: "Timing: 0-6s stillness, 6-9s tension hold, 9-10s micro shimmer.",
+        7: "Timing: 0-3s pressure build, 3-7s rapid leak transfer, 7-10s cliffhanger lock before cut.",
+    }
+
     for idx, beat in enumerate(SCENE_BEATS, start=1):
         image_prompt = (
-            f"Cinematic still, {visual_focus[idx - 1]} mythic archive aesthetic, volumetric lighting, "
-            f"PG-13 fantasy tone, no gore, no explicit content."
+            "Cinematic anime realism still frame. "
+            f"Environment: {visual_focus[idx - 1]} "
+            f"Subject placement: {layout_notes[idx]} "
+            "Lighting: volumetric god rays, high-contrast rim light, reflective floor bounce, atmospheric fog layering. "
+            "Atmosphere style: mythic sacred vault, dramatic yet grounded realism, sharp depth separation from foreground to deep background. "
+            "Safety: PG-13 fantasy only, no gore, no explicit content, no dismemberment, no hateful symbols."
         )
         video_prompt = (
-            f"10-second cinematic shot for '{beat.name}'. Camera motion tailored for {pacing_map[idx]} pacing, "
-            f"focus on {artifact['name']}, enforce consistent {identity.energy_color} legendary energy color, "
-            f"include subtle environmental particles, high dynamic range, mythic mystery tone, "
-            f"safe-for-all-audiences storytelling."
+            f"Grok-optimized 10-second cinematic anime realism shot for scene {idx} '{beat.name}'. "
+            f"Camera motion: {camera_paths[idx]}. "
+            f"Spatial layout: {layout_notes[idx]} "
+            f"Energy behavior: {energy_behavior[idx]} "
+            f"Pacing profile: {pacing_map[idx]} with clean acceleration and controlled deceleration. "
+            f"{timing_notes[idx]} "
+            "Anti-randomness constraints: lock character count to named subjects only, preserve object continuity across all frames, "
+            "keep energy color fixed, avoid random extra props, avoid spontaneous costume changes, avoid geometry warping, "
+            "maintain consistent lens and horizon line. "
+            "Background elements must remain visible: rune walls, floating dust motes, relic silhouettes, distant vault architecture. "
+            "Output must stay safe-for-all-audiences with no graphic violence or explicit material."
         )
+
+        if idx == 5:
+            video_prompt += (
+                " Mandatory story event: perform explicit inner vision transition and show the full legendary reveal at stable full-body scale."
+            )
+            image_prompt += " Mandatory story event: depict the inner vision transition and complete legendary reveal."
+
+        if idx == 7:
+            video_prompt += (
+                f" Mandatory story event: execute a rapid energy leak transition into {next_artifact['name']} and end on a severe cliffhanger beat."
+            )
+            image_prompt += f" Mandatory story event: show rapid energy leakage toward {next_artifact['name']} with cliffhanger tension."
 
         scenes.append(
             {
                 "scene_number": idx,
+                "scene_summary": scene_summaries[idx - 1],
                 "duration_seconds": director["scene_duration_seconds"],
                 "beat": beat.name,
                 "purpose": beat.purpose,
@@ -180,6 +256,9 @@ def _build_scene_content(
                 "cinematic_transition_notes": transition_notes[idx - 1],
                 "safe_image_prompt": image_prompt,
                 "cinematic_video_prompt": video_prompt,
+                "image_prompt": image_prompt,
+                "video_prompt": video_prompt,
+                "narration_line": narration[idx - 1],
                 "safety_requirements": safety_line,
             }
         )
@@ -274,6 +353,7 @@ def generate_artifact_episode(artifact_name: str, episode_number: int) -> Dict[s
         "title": title,
         "thumbnail_concept": thumbnail_concept,
         "director_style": world["director"]["director_style"],
+        "auto_cinematic_prompt_mode": AUTO_CINEMATIC_PROMPT_MODE,
         "tone": world["director"]["language_style"],
         "episode_card": episode_card,
         "spirit_entity": spirit,
