@@ -1,6 +1,6 @@
 """Fireverse Artifact Engine.
 
-Generates cinematic 6-scene episodes centered on a single artifact from the
+Generates cinematic 7-scene episodes centered on a single artifact from the
 Fireverse Artifact Vault.
 """
 
@@ -24,14 +24,27 @@ class SceneBeat:
     purpose: str
 
 
+@dataclass
+class LegendaryIdentity:
+    element: str
+    energy_color: str
+
+
 SCENE_BEATS: List[SceneBeat] = [
-    SceneBeat("Mythic discovery", "Introduce artifact legend and first visual reveal."),
-    SceneBeat("Archive atmosphere / lore hint", "Deepen vault lore with environmental tension."),
-    SceneBeat("Energy awakening", "Show first signs of power ignition."),
-    SceneBeat("Activation buildup", "Escalate rhythm and stakes before release."),
-    SceneBeat("Explosive power release", "Deliver high-intensity activation climax."),
-    SceneBeat("Mystery aftermath / cliffhanger", "Close with unresolved omen and sequel hook."),
+    SceneBeat("Discovery inside vault", "Introduce the artifact in a sacred hidden chamber."),
+    SceneBeat("Archive reveal with relic rows", "Show relic curiosity with future-episode hints on both sides."),
+    SceneBeat("Energy awakening", "Establish the first controlled surge of legendary energy."),
+    SceneBeat("Activation buildup with distorted silhouette", "Escalate pressure and hint at danger without full reveal."),
+    SceneBeat("Explosive release + inner vision legendary reveal", "Transition into inner vision world for cinematic climax."),
+    SceneBeat("Calm containment + micro shimmer twist", "Restore order, then inject a very brief ominous shimmer."),
+    SceneBeat("Energy leak to next artifact", "Create urgent cliffhanger linking directly to the next episode."),
 ]
+
+LEGENDARY_COLOR_RULES: Dict[str, LegendaryIdentity] = {
+    "electric": LegendaryIdentity(element="electric", energy_color="yellow"),
+    "ice": LegendaryIdentity(element="ice", energy_color="blue"),
+    "fire": LegendaryIdentity(element="fire", energy_color="red/orange"),
+}
 
 
 def _read_json(path: Path) -> Any:
@@ -85,6 +98,10 @@ def _build_scene_content(
     spirit: Dict[str, str],
     vault: Dict[str, Any],
     director: Dict[str, Any],
+    identity: LegendaryIdentity,
+    reveal_scale: str,
+    episode_intensity: str,
+    next_artifact: Dict[str, str],
 ) -> List[Dict[str, str]]:
     pacing_map = {
         1: director["pacing"]["scene_1_to_3"],
@@ -93,27 +110,43 @@ def _build_scene_content(
         4: director["pacing"]["scene_4"],
         5: director["pacing"]["scene_5"],
         6: director["pacing"]["scene_6"],
+        7: director["pacing"]["scene_7"],
     }
 
     lore = vault["core_lore"]
-    warnings = vault["warnings"]
+
+    scene_five_reveal = (
+        f"fully in a storm-torn inner vision realm" if reveal_scale == "full" else f"as a fragmented silhouette in the inner vision realm"
+    )
 
     narration = [
-        f"In the silent deep of the vault, the {artifact['name']} is found where prayers turned to stone.",
-        f"Obsidian columns breathe with memory: {lore[0]}",
-        f"A pulse answers the chamber as {artifact['power']} stirs beneath etched sigils.",
-        f"The air tightens; {spirit['name']} appears, testing intent before release.",
-        f"Then ignition—{artifact['consequence']} as the chamber erupts in controlled cosmic fire.",
-        f"When the light fades, a final echo remains: {warnings[2]}",
+        f"Inside the sealed vault sanctum, the {artifact['name']} rises from a dormant cradle of runes.",
+        f"Archive lanes ignite with relics on both sides, each relic whispering unfinished legends beyond {lore[0]}",
+        f"A steady pulse expands as {artifact['power']} awakens in {identity.energy_color} energy bands.",
+        f"Containment rings strain while a distorted, partial silhouette of {spirit['name']} fractures through static.",
+        f"The chamber detonates into light, then plunges inward—an inner vision realm reveals {spirit['name']} {scene_five_reveal}.",
+        f"Containment returns to silence, yet a sub-second shimmer darts behind the altar as if tracking the wielder.",
+        f"Residual energy leaks from the {artifact['name']} and lashes into the sealed {next_artifact['name']}, forcing an urgent camera snap.",
     ]
 
     visual_focus = [
-        f"Dusty altar reveal of {artifact['name']} with {artifact['visual_motif']} detail.",
-        "Wide vault corridor, torchlight, living runes and sacred mechanical doors.",
-        "Energy veins race across floor glyphs toward artifact core.",
-        f"Wielder silhouette reaches forward while {spirit['nature']} circles above.",
-        "Shockwave of light, particles, and vault geometry warping in rhythmic bursts.",
-        "Smoldering chamber, fragmented symbol hovering in darkness.",
+        f"Discovery chamber altar reveals {artifact['name']} with {artifact['visual_motif']} detail under blue ambient vault haze.",
+        "Symmetrical archive corridor with massive relics on both sides, each artifact imposing and curiosity-driven.",
+        f"Legendary {identity.energy_color} veins race across glyphs and overtake ambient blue tones.",
+        f"Activation rings spin while only a distorted partial silhouette of {spirit['name']} flickers in warped glass reflections.",
+        "Explosive release, camera rush into artifact core, transition into an inner vision world with storm-charged cinematic danger.",
+        "Vault stabilizes to calm blue ambiance; a near-invisible shimmer/shadow crosses frame for less than one second.",
+        f"Rapid whip-pan from current altar to the sealed {next_artifact['name']} as leaked energy arcs across the vault, with optional dark sorcerer-like silhouette in background.",
+    ]
+
+    transition_notes = [
+        "Fade in from darkness to sacred archive silence.",
+        "Slow lateral glide between towering relic rows on left and right.",
+        f"Push-in toward artifact core as {identity.energy_color} ignition overtakes ambient blue light.",
+        "Stutter-zoom with lens distortion; silhouette remains fragmented and never fully clear.",
+        "Explosive flash -> camera rush into artifact -> hard transition to inner vision world (not vault reality).",
+        "Breath-hold static frame after containment, then micro shimmer less than one second.",
+        "Whip-pan following leaked energy into next sealed relic to form an urgent cliffhanger cut.",
     ]
 
     scenes: List[Dict[str, str]] = []
@@ -126,8 +159,9 @@ def _build_scene_content(
         )
         video_prompt = (
             f"10-second cinematic shot for '{beat.name}'. Camera motion tailored for {pacing_map[idx]} pacing, "
-            f"focus on {artifact['name']}, include subtle environmental particles, high dynamic range, "
-            f"mythic mystery tone, safe-for-all-audiences storytelling."
+            f"focus on {artifact['name']}, enforce consistent {identity.energy_color} legendary energy color, "
+            f"include subtle environmental particles, high dynamic range, mythic mystery tone, "
+            f"safe-for-all-audiences storytelling."
         )
 
         scenes.append(
@@ -139,6 +173,11 @@ def _build_scene_content(
                 "pacing_stage": pacing_map[idx],
                 "visual_focus": visual_focus[idx - 1],
                 "narration": narration[idx - 1],
+                "legendary_energy_color": identity.energy_color,
+                "legendary_element": identity.element,
+                "legendary_reveal_scale": reveal_scale if idx == 5 else ("partial" if idx == 4 else "minor"),
+                "episode_intensity": episode_intensity,
+                "cinematic_transition_notes": transition_notes[idx - 1],
                 "safe_image_prompt": image_prompt,
                 "cinematic_video_prompt": video_prompt,
                 "safety_requirements": safety_line,
@@ -146,6 +185,41 @@ def _build_scene_content(
         )
 
     return scenes
+
+
+def _infer_legendary_identity(artifact: Dict[str, str]) -> LegendaryIdentity:
+    signals = " ".join(
+        [artifact["name"], artifact["origin"], artifact["power"], artifact["consequence"], artifact["visual_motif"]]
+    ).lower()
+
+    fire_words = {"ember", "fire", "flame", "molten", "volcanic", "infernal", "solar", "plasma"}
+    ice_words = {"ice", "frost", "glacial", "blizzard", "winter", "cryo"}
+    electric_words = {"electric", "lightning", "thunder", "storm", "voltaic", "kinetic", "spark"}
+
+    if any(word in signals for word in fire_words):
+        return LEGENDARY_COLOR_RULES["fire"]
+    if any(word in signals for word in ice_words):
+        return LEGENDARY_COLOR_RULES["ice"]
+    if any(word in signals for word in electric_words):
+        return LEGENDARY_COLOR_RULES["electric"]
+
+    ordered = list(LEGENDARY_COLOR_RULES.values())
+    return ordered[sum(ord(char) for char in artifact["name"]) % len(ordered)]
+
+
+def _choose_next_artifact(artifacts: List[Dict[str, str]], artifact_name: str) -> Dict[str, str]:
+    current_index = next((idx for idx, item in enumerate(artifacts) if item["name"] == artifact_name), None)
+    if current_index is None:
+        return artifacts[0]
+    return artifacts[(current_index + 1) % len(artifacts)]
+
+
+def _episode_intensity(episode_number: int) -> str:
+    return "high" if episode_number % 3 == 0 else "standard"
+
+
+def _determine_reveal_scale(episode_intensity: str) -> str:
+    return "full" if episode_intensity == "high" else "partial"
 
 
 def generate_artifact_episode(artifact_name: str, episode_number: int) -> Dict[str, Any]:
@@ -160,16 +234,29 @@ def generate_artifact_episode(artifact_name: str, episode_number: int) -> Dict[s
     """
     world = _load_world_state()
     artifact = _select_artifact(world["artifacts"], artifact_name)
+    identity = _infer_legendary_identity(artifact)
+    next_artifact = _choose_next_artifact(world["artifacts"], artifact["name"])
+    episode_intensity = _episode_intensity(episode_number)
+    reveal_scale = _determine_reveal_scale(episode_intensity)
 
     rng = Random(f"{_safe_slug(artifact_name)}-{episode_number}")
     spirit = world["spirits"][rng.randrange(0, len(world["spirits"]))]
 
-    scenes = _build_scene_content(artifact, spirit, world["vault"], world["director"])
+    scenes = _build_scene_content(
+        artifact,
+        spirit,
+        world["vault"],
+        world["director"],
+        identity,
+        reveal_scale,
+        episode_intensity,
+        next_artifact,
+    )
 
     title = _build_title(artifact, episode_number)
     thumbnail_concept = _build_thumbnail(artifact, spirit)
     hook = f"A sealed relic calls to the chosen hand—and the vault listens."
-    cliffhanger = f"A hidden chamber unlocks after the {artifact['name']} activation signature is recorded."
+    cliffhanger = f"Leaked {identity.energy_color} energy surges into the sealed {next_artifact['name']}, forcing a vault-wide emergency."
 
     episode_card = world["episode_template"].format(
         episode_number=episode_number,
@@ -190,6 +277,15 @@ def generate_artifact_episode(artifact_name: str, episode_number: int) -> Dict[s
         "tone": world["director"]["language_style"],
         "episode_card": episode_card,
         "spirit_entity": spirit,
+        "legendary_identity": {"element": identity.element, "energy_color": identity.energy_color},
+        "legendary_reveal_scale_system": {
+            "minor": "energy only",
+            "partial": "silhouette",
+            "full": "rare cinematic climax",
+            "scene_5_selected_scale": reveal_scale,
+            "episode_intensity": episode_intensity,
+        },
+        "next_episode_teaser_artifact": next_artifact["name"],
         "scene_plan": scenes,
         "narration_lines": [scene["narration"] for scene in scenes],
     }
