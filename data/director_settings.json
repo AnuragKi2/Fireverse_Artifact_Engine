@@ -1,11 +1,12 @@
 {
-  "director_style": "Hybrid tone: slow mythic buildup to explosive activation.",
-  "language_style": "mythic cinematic mystery",
+  "director_style": "Dark Sacred Archive + blue ambient environment; legendary energy color overrides ambient light when active.",
+  "language_style": "mythic cinematic mystery with urgent sequel momentum",
   "pacing": {
-    "scene_1_to_3": "slow_buildup",
+    "scene_1_to_3": "slow_mythic_buildup",
     "scene_4": "tense_acceleration",
-    "scene_5": "explosive_release",
-    "scene_6": "haunting_coda"
+    "scene_5": "explosive_climax",
+    "scene_6": "calm_containment",
+    "scene_7": "urgent_cliffhanger"
   },
   "safety_rules": [
     "Avoid graphic violence.",
@@ -13,5 +14,5 @@
     "Keep prompts suitable for broad audience storytelling."
   ],
   "scene_duration_seconds": 10,
-  "scene_count": 6
+  "scene_count": 7
 }
